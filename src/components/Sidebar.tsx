@@ -108,7 +108,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar" id="sidebar-nav">
       <div className="sidebar-brand">
-        <div className="sidebar-brand-icon">IV</div>
+        <div className="sidebar-brand-icon">IP</div>
         <div>
           <div className="sidebar-brand-text">InventoryPro</div>
           <div className="sidebar-brand-sub">Management System</div>

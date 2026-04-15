@@ -78,7 +78,7 @@ export default function LoginPage() {
         <div className="login-brand-side">
           <div className="login-brand-content">
             <div className="login-brand-logo">
-              <span className="login-logo-text">IV</span>
+              <span className="login-logo-text">IP</span>
             </div>
             <h1 className="login-brand-title">InventoryPro</h1>
             <p className="login-brand-tagline">
