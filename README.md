@@ -89,6 +89,13 @@ InventoryPro is a full-stack, cloud-connected Inventory Management System built 
    ```
    Open `http://localhost:3000`
 
+### 🔄 Resetting the Database
+If you ever want to wipe all data and start fresh with the default demo data, run:
+```bash
+npx prisma db push --force-reset --accept-data-loss
+npx prisma db seed
+```
+
 ## 🏗 Architecture
 
 - **Server Components + API Routes**: Next.js App Router for SSR pages and REST API endpoints under `/api/`.
