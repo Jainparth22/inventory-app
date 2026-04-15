@@ -14,8 +14,9 @@ import {
   Plus,
   BarChart3,
   FileText,
+  Activity,
 } from 'lucide-react';
-import { formatCurrency, getStatusBadgeClass, getStatusLabel } from '@/lib/utils';
+import { formatCurrency, formatDateTime, getStatusBadgeClass, getStatusLabel } from '@/lib/utils';
 import Link from 'next/link';
 import {
   BarChart,
@@ -64,6 +65,9 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
+  const [activities, setActivities] = useState<Array<{
+    id: string; type: string; title: string; description: string; timestamp: string; status: string;
+  }>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,6 +77,9 @@ export default function DashboardPage() {
         setData(d);
         setLoading(false);
       });
+    fetch('/api/activity')
+      .then((res) => res.json())
+      .then(setActivities);
   }, []);
 
   if (loading) {
@@ -432,6 +439,53 @@ export default function DashboardPage() {
               <p className="text-muted text-small" style={{ padding: 20, textAlign: 'center' }}>No purchases yet</p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Activity Log */}
+      <div className="card" style={{ marginBottom: 'var(--space-5)' }}>
+        <div className="card-header">
+          <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Activity size={16} />
+            Recent Activity
+          </div>
+        </div>
+        <div className="card-body compact-list">
+          {activities.slice(0, 8).map((activity) => (
+            <div key={activity.id} className="compact-list-item">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', minWidth: 0 }}>
+                <div style={{
+                  width: 28, height: 28, borderRadius: 'var(--radius-sm)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  background: activity.type === 'sale' ? 'var(--accent-blue-light)'
+                    : activity.type === 'purchase' ? 'var(--accent-purple-light)'
+                    : 'var(--accent-amber-light)',
+                  color: activity.type === 'sale' ? 'var(--accent-blue)'
+                    : activity.type === 'purchase' ? 'var(--accent-purple)'
+                    : 'var(--accent-amber)',
+                }}>
+                  {activity.type === 'sale' ? <ShoppingCart size={14} />
+                    : activity.type === 'purchase' ? <Truck size={14} />
+                    : <Factory size={14} />}
+                </div>
+                <div className="compact-list-left">
+                  <div className="compact-list-title">{activity.title}</div>
+                  <div className="compact-list-sub">{activity.description}</div>
+                </div>
+              </div>
+              <div className="compact-list-right">
+                <span className="text-small text-muted" style={{ whiteSpace: 'nowrap' }}>
+                  {formatDateTime(activity.timestamp)}
+                </span>
+                <span className={`badge ${getStatusBadgeClass(activity.status)}`}>
+                  {getStatusLabel(activity.status)}
+                </span>
+              </div>
+            </div>
+          ))}
+          {activities.length === 0 && (
+            <p className="text-muted text-small" style={{ padding: 20, textAlign: 'center' }}>No recent activity</p>
+          )}
         </div>
       </div>
     </div>

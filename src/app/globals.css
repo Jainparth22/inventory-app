@@ -80,6 +80,59 @@
 }
 
 /* ═══════════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════════ */
+
+[data-theme='dark'] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-sidebar: #020617;
+  --bg-sidebar-hover: #1e293b;
+  --bg-sidebar-active: #1e40af;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
+  --text-sidebar: #cbd5e1;
+  --text-sidebar-active: #ffffff;
+
+  --accent-blue-light: rgba(59, 130, 246, 0.15);
+  --accent-blue-border: rgba(59, 130, 246, 0.3);
+  --accent-green-light: rgba(16, 185, 129, 0.15);
+  --accent-green-border: rgba(16, 185, 129, 0.3);
+  --accent-amber-light: rgba(245, 158, 11, 0.15);
+  --accent-amber-border: rgba(245, 158, 11, 0.3);
+  --accent-red-light: rgba(239, 68, 68, 0.15);
+  --accent-red-border: rgba(239, 68, 68, 0.3);
+  --accent-purple-light: rgba(139, 92, 246, 0.15);
+  --accent-indigo-light: rgba(99, 102, 241, 0.15);
+
+  --border-color: #334155;
+  --border-color-dark: #475569;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+}
+
+[data-theme='dark'] .badge-green { color: #34d399; }
+[data-theme='dark'] .badge-amber { color: #fbbf24; }
+[data-theme='dark'] .badge-red { color: #f87171; }
+
+[data-theme='dark'] .master-list-search input:focus {
+  background: var(--bg-tertiary);
+}
+
+[data-theme='dark'] .login-form-side {
+  background: #1e293b;
+}
+
+[data-theme='dark'] .recharts-cartesian-grid-bg { fill: transparent; }
+
+/* ═══════════════════════════════════════════
    RESET & BASE
    ═══════════════════════════════════════════ */
 
@@ -1436,6 +1489,133 @@ textarea {
   opacity: 1;
   background: rgba(239, 68, 68, 0.15) !important;
   color: #fca5a5 !important;
+}
+
+.sidebar-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-sidebar);
+  opacity: 0.7;
+  transition: all var(--transition-fast);
+  font-size: 12px;
+  background: none;
+  border: none;
+}
+
+.theme-toggle:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Sortable table header */
+.sortable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: color var(--transition-fast);
+}
+
+.sortable-header:hover {
+  color: var(--accent-blue);
+}
+
+.sort-icon {
+  display: inline-flex;
+  margin-left: 4px;
+  opacity: 0.4;
+  vertical-align: middle;
+}
+
+.sort-icon.active {
+  opacity: 1;
+  color: var(--accent-blue);
+}
+
+/* Print View */
+.print-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.print-btn:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+@media print {
+  .sidebar,
+  .page-header,
+  .master-list,
+  .detail-panel-actions,
+  .pipeline {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .master-detail {
+    display: block !important;
+  }
+
+  .detail-panel {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .app-layout {
+    display: block !important;
+  }
+}
+
+/* Low stock indicator */
+.low-stock-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: var(--accent-amber-light);
+  border: 1px solid var(--accent-amber-border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent-amber);
+  margin-bottom: var(--space-4);
+}
+
+[data-theme='dark'] .low-stock-bar {
+  color: #fbbf24;
+}
+
+/* Keyboard shortcut hints */
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  color: var(--text-sidebar);
+  margin-left: auto;
+  opacity: 0.5;
 }
 
 /* ═══════════════════════════════════════════

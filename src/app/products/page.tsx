@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   Search,
   Plus,
@@ -9,6 +9,11 @@ import {
   Package,
   X,
   Save,
+  Printer,
+  AlertTriangle,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/utils';
 
@@ -23,6 +28,9 @@ interface Product {
   lastUpdated: string;
 }
 
+type SortKey = 'name' | 'productCode' | 'price' | 'quantity' | 'lastUpdated';
+type SortDir = 'asc' | 'desc';
+
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selected, setSelected] = useState<Product | null>(null);
@@ -30,6 +38,8 @@ export default function ProductsPage() {
   const [showModal, setShowModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sortKey, setSortKey] = useState<SortKey>('name');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
 
   const [form, setForm] = useState({
     productCode: '',
@@ -50,6 +60,37 @@ export default function ProductsPage() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  // Sortable products
+  const sortedProducts = useMemo(() => {
+    return [...products].sort((a, b) => {
+      let valA: string | number = a[sortKey] ?? '';
+      let valB: string | number = b[sortKey] ?? '';
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [products, sortKey, sortDir]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  };
+
+  const SortIcon = ({ column }: { column: SortKey }) => {
+    if (sortKey !== column) return <ArrowUpDown size={12} className="sort-icon" />;
+    return sortDir === 'asc'
+      ? <ArrowUp size={12} className="sort-icon active" />
+      : <ArrowDown size={12} className="sort-icon active" />;
+  };
+
+  const lowStockCount = products.filter((p) => p.quantity < 50).length;
 
   const openCreate = () => {
     setForm({ productCode: '', name: '', description: '', weight: '', price: '', quantity: '' });
@@ -96,6 +137,10 @@ export default function ProductsPage() {
     await fetchProducts();
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -109,6 +154,14 @@ export default function ProductsPage() {
           </button>
         </div>
       </div>
+
+      {/* Low stock alert bar */}
+      {lowStockCount > 0 && (
+        <div className="low-stock-bar">
+          <AlertTriangle size={14} />
+          <span><strong>{lowStockCount}</strong> product{lowStockCount > 1 ? 's' : ''} below reorder point (50 units)</span>
+        </div>
+      )}
 
       <div className="master-detail">
         {/* Master List */}
@@ -124,8 +177,36 @@ export default function ProductsPage() {
                 id="product-search"
               />
             </div>
-            <div className="text-small text-muted">
-              {products.length} products
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div className="text-small text-muted">
+                {products.length} products
+              </div>
+              <div style={{ display: 'flex', gap: 4 }}>
+                <button
+                  className={`btn btn-ghost btn-sm ${sortKey === 'name' ? '' : ''}`}
+                  onClick={() => handleSort('name')}
+                  title="Sort by name"
+                  style={{ fontSize: 11 }}
+                >
+                  Name <SortIcon column="name" />
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => handleSort('quantity')}
+                  title="Sort by quantity"
+                  style={{ fontSize: 11 }}
+                >
+                  Qty <SortIcon column="quantity" />
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => handleSort('price')}
+                  title="Sort by price"
+                  style={{ fontSize: 11 }}
+                >
+                  Price <SortIcon column="price" />
+                </button>
+              </div>
             </div>
           </div>
           <div className="master-list-items">
@@ -136,14 +217,14 @@ export default function ProductsPage() {
                   <div className="skeleton" style={{ width: '40%', height: 12 }} />
                 </div>
               ))
-            ) : products.length === 0 ? (
+            ) : sortedProducts.length === 0 ? (
               <div className="empty-state">
                 <Package />
                 <div className="empty-state-title">No products found</div>
                 <div className="empty-state-text">Add your first product to get started</div>
               </div>
             ) : (
-              products.map((product) => (
+              sortedProducts.map((product) => (
                 <div
                   key={product.id}
                   className={`master-list-item ${selected?.id === product.id ? 'active' : ''}`}
@@ -172,6 +253,9 @@ export default function ProductsPage() {
               <div className="detail-panel-header">
                 <div className="detail-panel-title">{selected.name}</div>
                 <div className="detail-panel-actions">
+                  <button className="btn btn-outline btn-sm print-btn" onClick={handlePrint} title="Print details">
+                    <Printer size={14} /> Print
+                  </button>
                   <button className="btn btn-outline btn-sm" onClick={openEdit} id="btn-edit-product">
                     <Pencil size={14} /> Edit
                   </button>

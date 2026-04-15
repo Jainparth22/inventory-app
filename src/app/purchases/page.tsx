@@ -9,6 +9,7 @@ import {
   Trash2,
   Truck,
   ChevronRight,
+  Printer,
 } from 'lucide-react';
 import { formatCurrency, formatDate, getStatusBadgeClass, getStatusLabel } from '@/lib/utils';
 
@@ -238,6 +239,9 @@ export default function PurchasesPage() {
                   <div className="text-small text-muted mt-2">Created {formatDate(selected.createdAt)}</div>
                 </div>
                 <div className="detail-panel-actions">
+                  <button className="btn btn-outline btn-sm print-btn" onClick={() => window.print()} title="Print order">
+                    <Printer size={14} /> Print
+                  </button>
                   {selected.status !== 'completed' && (
                     <button className="btn btn-success btn-sm" onClick={handleAdvance} id="btn-advance-purchase">
                       <ChevronRight size={14} /> {getNextStageLabel(selected.status)}
