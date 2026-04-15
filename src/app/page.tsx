@@ -248,7 +248,7 @@ export default function DashboardPage() {
                     fontSize: 12,
                     boxShadow: 'var(--shadow-md)',
                   }}
-                  formatter={(value: number) => [`${value} units`, 'Stock']}
+                  formatter={(value) => [`${value} units`, 'Stock']}
                 />
                 <Bar dataKey="stock" radius={[4, 4, 0, 0]} maxBarSize={40}>
                   {data.stockLevels.map((entry, index) => (
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                     fontSize: 12,
                     boxShadow: 'var(--shadow-md)',
                   }}
-                  formatter={(value: number) => [formatCurrency(value), 'Value']}
+                  formatter={(value) => [formatCurrency(Number(value)), 'Value']}
                 />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={28}>
                   {data.topProductsByValue.map((_, index) => (
@@ -351,9 +351,9 @@ export default function DashboardPage() {
                       borderRadius: 8,
                       fontSize: 12,
                     }}
-                    formatter={(value: number, name: string) => [
+                    formatter={(value, name) => [
                       `${value} orders`,
-                      getStatusLabel(name),
+                      getStatusLabel(String(name)),
                     ]}
                   />
                 </PieChart>
