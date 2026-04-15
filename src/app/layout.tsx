@@ -20,6 +20,9 @@ export default function RootLayout({
           name="description"
           content="Cloud-connected inventory management for sales, purchases, and manufacturing workflows."
         />
+        <meta name="theme-color" content="#1e40af" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
       </head>
       <body suppressHydrationWarning>
         {isLoginPage ? (

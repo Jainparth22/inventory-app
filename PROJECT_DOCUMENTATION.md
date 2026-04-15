@@ -63,7 +63,7 @@ InventoryPro is a cloud-connected Inventory Management System designed for small
 ## 4. Instructions to Run / Access
 
 ### Live Application
-- **URL**: *(Your Vercel deployment URL)*
+- **URL**: *https://inventory-app-sigma-dun.vercel.app/login*
 - **Credentials**: Username: `admin` | Password: `admin123`
 
 ### Local Development
@@ -79,6 +79,13 @@ npm run dev
 
 ---
 
-**Team**: Parth Jain
-**Email**: *(Your email here)*
+**Member 1**: Akanksha Tripathi
+**Email**: *tripathiakanksha339@gmail.com*
+
+
+
+**Member 2**: Parth Jain
+**Email**: *jain22parth@gmail.com*
+
+
 **GitHub**: https://github.com/Jainparth22/inventory-app

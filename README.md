@@ -4,10 +4,15 @@ InventoryPro is a full-stack, cloud-connected Inventory Management System built 
 
 ## 🌐 Live Demo
 
-**Production URL**: *(Add your Vercel URL here)*
+**Production URL**: *https://inventory-app-sigma-dun.vercel.app/login*
 **GitHub**: https://github.com/Jainparth22/inventory-app
 
 **Login Credentials**: `admin` / `admin123`
+
+### 🖥️ Install as Desktop App (Windows)
+1. Open the Vercel URL in **Google Chrome** or **Microsoft Edge**
+2. Click the **install icon** (⊕) in the browser's address bar
+3. Click "Install" — the app launches as a standalone desktop window with its own taskbar icon
 
 ## 🚀 Features
 
