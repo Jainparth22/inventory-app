@@ -1127,6 +1127,200 @@ textarea {
 .mb-4 { margin-bottom: var(--space-4); }
 
 /* ═══════════════════════════════════════════
+   QUICK ACCESS PANEL
+   ═══════════════════════════════════════════ */
+
+.quick-access {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+
+.quick-access-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.quick-access-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.quick-access-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.quick-access-btn.blue .quick-access-icon {
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+}
+.quick-access-btn.blue:hover {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue-light);
+}
+
+.quick-access-btn.purple .quick-access-icon {
+  background: var(--accent-purple-light);
+  color: var(--accent-purple);
+}
+.quick-access-btn.purple:hover {
+  border-color: var(--accent-purple);
+  background: var(--accent-purple-light);
+}
+
+.quick-access-btn.green .quick-access-icon {
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+}
+.quick-access-btn.green:hover {
+  border-color: var(--accent-green);
+  background: var(--accent-green-light);
+}
+
+.quick-access-btn.amber .quick-access-icon {
+  background: var(--accent-amber-light);
+  color: var(--accent-amber);
+}
+.quick-access-btn.amber:hover {
+  border-color: var(--accent-amber);
+  background: var(--accent-amber-light);
+}
+
+.quick-access-btn.indigo .quick-access-icon {
+  background: var(--accent-indigo-light);
+  color: var(--accent-indigo);
+}
+.quick-access-btn.indigo:hover {
+  border-color: var(--accent-indigo);
+  background: var(--accent-indigo-light);
+}
+
+/* ═══════════════════════════════════════════
+   DASHBOARD GRIDS
+   ═══════════════════════════════════════════ */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.dashboard-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+/* ═══════════════════════════════════════════
+   CHART LEGEND
+   ═══════════════════════════════════════════ */
+
+.chart-legend {
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border-color);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.chart-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chart-legend-count {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════
+   COMPACT LIST (recent orders)
+   ═══════════════════════════════════════════ */
+
+.compact-list {
+  padding: 0 !important;
+}
+
+.compact-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+  transition: background var(--transition-fast);
+}
+
+.compact-list-item:last-child {
+  border-bottom: none;
+}
+
+.compact-list-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.compact-list-left {
+  min-width: 0;
+}
+
+.compact-list-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.compact-list-sub {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  margin-top: 1px;
+}
+
+.compact-list-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.compact-list-amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+
+/* ═══════════════════════════════════════════
    LOADING STATES
    ═══════════════════════════════════════════ */
 

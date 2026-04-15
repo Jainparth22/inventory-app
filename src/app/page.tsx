@@ -10,9 +10,27 @@ import {
   Factory,
   ArrowRight,
   TrendingUp,
+  TrendingDown,
+  Plus,
+  BarChart3,
+  FileText,
 } from 'lucide-react';
-import { formatCurrency, formatDate, getStatusBadgeClass, getStatusLabel } from '@/lib/utils';
+import { formatCurrency, getStatusBadgeClass, getStatusLabel } from '@/lib/utils';
 import Link from 'next/link';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid,
+} from 'recharts';
+
+const PIE_COLORS = ['#3b82f6', '#f59e0b', '#8b5cf6', '#10b981'];
 
 interface DashboardData {
   totalProducts: number;
@@ -37,6 +55,11 @@ interface DashboardData {
     createdAt: string;
     supplier: { name: string } | null;
   }>;
+  topProductsByValue: Array<{ name: string; value: number; quantity: number }>;
+  stockLevels: Array<{ name: string; stock: number; low: boolean }>;
+  salesStatusChart: Array<{ name: string; value: number }>;
+  totalSalesRevenue: number;
+  totalPurchasesCost: number;
 }
 
 export default function DashboardPage() {
@@ -72,6 +95,11 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+        <div className="dashboard-grid">
+          <div className="card" style={{ gridColumn: 'span 2' }}>
+            <div className="skeleton" style={{ width: '100%', height: 240 }} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -85,11 +113,30 @@ export default function DashboardPage() {
           <h1 className="page-title">Dashboard</h1>
           <p className="page-subtitle">Overview of your inventory operations</p>
         </div>
-        <div className="page-header-actions">
-          <Link href="/sales" className="btn btn-primary" id="dashboard-new-sale">
-            <ShoppingCart /> New Sale Order
-          </Link>
-        </div>
+      </div>
+
+      {/* Quick Access Panel */}
+      <div className="quick-access">
+        <Link href="/sales" className="quick-access-btn blue" id="qa-new-sale">
+          <div className="quick-access-icon"><ShoppingCart size={20} /></div>
+          <span>New Sale Order</span>
+        </Link>
+        <Link href="/purchases" className="quick-access-btn purple" id="qa-new-purchase">
+          <div className="quick-access-icon"><Truck size={20} /></div>
+          <span>New Purchase</span>
+        </Link>
+        <Link href="/products" className="quick-access-btn green" id="qa-add-product">
+          <div className="quick-access-icon"><Plus size={20} /></div>
+          <span>Add Product</span>
+        </Link>
+        <Link href="/manufacturing" className="quick-access-btn amber" id="qa-new-batch">
+          <div className="quick-access-icon"><Factory size={20} /></div>
+          <span>New Batch</span>
+        </Link>
+        <Link href="/history" className="quick-access-btn indigo" id="qa-history">
+          <div className="quick-access-icon"><FileText size={20} /></div>
+          <span>View History</span>
+        </Link>
       </div>
 
       {/* Stat Cards */}
@@ -121,133 +168,269 @@ export default function DashboardPage() {
           <div className="stat-card-info">
             <div className="stat-card-label">Low Stock Items</div>
             <div className="stat-card-value">{data.lowStockProducts}</div>
-            <div className="stat-card-trend">Below 50 units</div>
           </div>
         </div>
 
-        <div className="stat-card" id="stat-pending-sales">
-          <div className="stat-card-icon amber">
-            <ShoppingCart size={22} />
+        <div className="stat-card" id="stat-revenue">
+          <div className="stat-card-icon green">
+            <TrendingUp size={22} />
           </div>
           <div className="stat-card-info">
-            <div className="stat-card-label">Pending Sales</div>
-            <div className="stat-card-value">{data.pendingSalesOrders}</div>
+            <div className="stat-card-label">Total Sales</div>
+            <div className="stat-card-value currency">{formatCurrency(data.totalSalesRevenue)}</div>
           </div>
         </div>
 
-        <div className="stat-card" id="stat-pending-purchases">
+        <div className="stat-card" id="stat-purchases-total">
           <div className="stat-card-icon purple">
-            <Truck size={22} />
+            <TrendingDown size={22} />
           </div>
           <div className="stat-card-info">
-            <div className="stat-card-label">Pending Purchases</div>
-            <div className="stat-card-value">{data.pendingPurchaseOrders}</div>
+            <div className="stat-card-label">Total Purchases</div>
+            <div className="stat-card-value currency">{formatCurrency(data.totalPurchasesCost)}</div>
           </div>
         </div>
 
         <div className="stat-card" id="stat-active-mfg">
-          <div className="stat-card-icon indigo">
+          <div className="stat-card-icon amber">
             <Factory size={22} />
           </div>
           <div className="stat-card-info">
-            <div className="stat-card-label">Active Manufacturing</div>
+            <div className="stat-card-label">Active WIP</div>
             <div className="stat-card-value">{data.activeManufacturing}</div>
-            <div className="stat-card-trend">WIP Batches</div>
+            <div className="stat-card-trend">Manufacturing Batches</div>
           </div>
         </div>
       </div>
 
-      {/* Recent Orders */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-        {/* Recent Sales */}
+      {/* Charts Row */}
+      <div className="dashboard-grid">
+        {/* Stock Levels Bar Chart */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <BarChart3 size={16} />
+              Stock Levels
+            </div>
+            <Link href="/products" className="btn btn-ghost btn-sm">
+              All Products <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="card-body" style={{ height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.stockLevels} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                <XAxis
+                  dataKey="name"
+                  fontSize={11}
+                  tick={{ fill: 'var(--text-secondary)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  fontSize={11}
+                  tick={{ fill: 'var(--text-tertiary)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    boxShadow: 'var(--shadow-md)',
+                  }}
+                  formatter={(value: number) => [`${value} units`, 'Stock']}
+                />
+                <Bar dataKey="stock" radius={[4, 4, 0, 0]} maxBarSize={40}>
+                  {data.stockLevels.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={entry.low ? '#ef4444' : '#3b82f6'}
+                      opacity={0.85}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Top Products by Value */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <IndianRupee size={16} />
+              Top Products by Value
+            </div>
+          </div>
+          <div className="card-body" style={{ height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.topProductsByValue} layout="vertical" margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border-color)" />
+                <XAxis
+                  type="number"
+                  fontSize={11}
+                  tick={{ fill: 'var(--text-tertiary)' }}
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
+                />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  width={110}
+                  fontSize={11}
+                  tick={{ fill: 'var(--text-secondary)' }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    boxShadow: 'var(--shadow-md)',
+                  }}
+                  formatter={(value: number) => [formatCurrency(value), 'Value']}
+                />
+                <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={28}>
+                  {data.topProductsByValue.map((_, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={['#3b82f6', '#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899'][index % 6]}
+                      opacity={0.85}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Second Row: Pie Chart + Recent Orders */}
+      <div className="dashboard-grid-3">
+        {/* Sales Status Distribution */}
+        <div className="card">
+          <div className="card-header">
+            <div className="card-title">Sales by Status</div>
+          </div>
+          <div className="card-body" style={{ height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {data.salesStatusChart.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={data.salesStatusChart}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    innerRadius={45}
+                    paddingAngle={4}
+                    strokeWidth={0}
+                  >
+                    {data.salesStatusChart.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      background: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: 8,
+                      fontSize: 12,
+                    }}
+                    formatter={(value: number, name: string) => [
+                      `${value} orders`,
+                      getStatusLabel(name),
+                    ]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-muted text-small">No sales data yet</p>
+            )}
+          </div>
+          {/* Legend */}
+          <div className="chart-legend">
+            {data.salesStatusChart.map((entry, i) => (
+              <div key={entry.name} className="chart-legend-item">
+                <span
+                  className="chart-legend-dot"
+                  style={{ background: PIE_COLORS[i % PIE_COLORS.length] }}
+                />
+                <span>{getStatusLabel(entry.name)}</span>
+                <span className="chart-legend-count">{entry.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Sales — compact */}
         <div className="card">
           <div className="card-header">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <TrendingUp size={16} />
-              Recent Sales Orders
+              Recent Sales
             </div>
             <Link href="/sales" className="btn btn-ghost btn-sm">
               View All <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="data-table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Customer</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.recentSalesOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td style={{ fontWeight: 600 }}>{order.orderNumber}</td>
-                    <td>{order.customer?.name || '—'}</td>
-                    <td className="currency">{formatCurrency(order.totalAmount)}</td>
-                    <td>
-                      <span className={`badge ${getStatusBadgeClass(order.status)}`}>
-                        {getStatusLabel(order.status)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {data.recentSalesOrders.length === 0 && (
-                  <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-tertiary)', padding: 24 }}>
-                      No recent sales orders
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          <div className="card-body compact-list">
+            {data.recentSalesOrders.slice(0, 4).map((order) => (
+              <div key={order.id} className="compact-list-item">
+                <div className="compact-list-left">
+                  <div className="compact-list-title">{order.orderNumber}</div>
+                  <div className="compact-list-sub">{order.customer?.name || '—'}</div>
+                </div>
+                <div className="compact-list-right">
+                  <div className="compact-list-amount currency">{formatCurrency(order.totalAmount)}</div>
+                  <span className={`badge ${getStatusBadgeClass(order.status)}`}>
+                    {getStatusLabel(order.status)}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {data.recentSalesOrders.length === 0 && (
+              <p className="text-muted text-small" style={{ padding: 20, textAlign: 'center' }}>No sales yet</p>
+            )}
           </div>
         </div>
 
-        {/* Recent Purchases */}
+        {/* Recent Purchases — compact */}
         <div className="card">
           <div className="card-header">
             <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Truck size={16} />
-              Recent Purchase Orders
+              Recent Purchases
             </div>
             <Link href="/purchases" className="btn btn-ghost btn-sm">
               View All <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="data-table-wrapper">
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Order</th>
-                  <th>Supplier</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.recentPurchaseOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td style={{ fontWeight: 600 }}>{order.orderNumber}</td>
-                    <td>{order.supplier?.name || '—'}</td>
-                    <td className="currency">{formatCurrency(order.totalAmount)}</td>
-                    <td>
-                      <span className={`badge ${getStatusBadgeClass(order.status)}`}>
-                        {getStatusLabel(order.status)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {data.recentPurchaseOrders.length === 0 && (
-                  <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-tertiary)', padding: 24 }}>
-                      No recent purchase orders
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+          <div className="card-body compact-list">
+            {data.recentPurchaseOrders.slice(0, 4).map((order) => (
+              <div key={order.id} className="compact-list-item">
+                <div className="compact-list-left">
+                  <div className="compact-list-title">{order.orderNumber}</div>
+                  <div className="compact-list-sub">{order.supplier?.name || '—'}</div>
+                </div>
+                <div className="compact-list-right">
+                  <div className="compact-list-amount currency">{formatCurrency(order.totalAmount)}</div>
+                  <span className={`badge ${getStatusBadgeClass(order.status)}`}>
+                    {getStatusLabel(order.status)}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {data.recentPurchaseOrders.length === 0 && (
+              <p className="text-muted text-small" style={{ padding: 20, textAlign: 'center' }}>No purchases yet</p>
+            )}
           </div>
         </div>
       </div>
