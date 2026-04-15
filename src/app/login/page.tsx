@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, Lock, User, ArrowRight, Package } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -11,6 +11,20 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [time, setTime] = useState('');
+  const [date, setDate] = useState('');
+
+  // Live clock
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      setTime(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }));
+      setDate(now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }));
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,35 +63,50 @@ export default function LoginPage() {
         <div className="login-bg-shape shape-3" />
       </div>
 
+      {/* Floating inventory items */}
+      <div className="login-scene">
+        <div className="float-box box-1">📦</div>
+        <div className="float-box box-2">🏭</div>
+        <div className="float-box box-3">📋</div>
+        <div className="float-box box-4">🔧</div>
+        <div className="float-box box-5">📊</div>
+        <div className="float-box box-6">🚚</div>
+      </div>
+
       <div className="login-container">
-        {/* Left side — branding */}
+        {/* Left side — animated branding */}
         <div className="login-brand-side">
           <div className="login-brand-content">
-            <div className="login-brand-icon">
-              <Package size={32} />
+            <div className="login-brand-logo">
+              <span className="login-logo-text">IV</span>
             </div>
             <h1 className="login-brand-title">InventoryPro</h1>
             <p className="login-brand-tagline">
-              Streamline your procurement, sales, and manufacturing workflows
-              with a modern inventory management system.
+              Your complete inventory command center — manage procurement, sales, and manufacturing from one place.
             </p>
-            <div className="login-brand-features">
-              <div className="login-brand-feature">
-                <div className="login-feature-dot" />
-                <span>Real-time inventory tracking</span>
+
+            {/* Live stats ticker */}
+            <div className="login-stats-ticker">
+              <div className="login-stat-item">
+                <span className="login-stat-num">10+</span>
+                <span className="login-stat-label">Products</span>
               </div>
-              <div className="login-brand-feature">
-                <div className="login-feature-dot" />
-                <span>Sales & Purchase order management</span>
+              <div className="login-stat-divider" />
+              <div className="login-stat-item">
+                <span className="login-stat-num">7+</span>
+                <span className="login-stat-label">Orders</span>
               </div>
-              <div className="login-brand-feature">
-                <div className="login-feature-dot" />
-                <span>Manufacturing (WIP) tracking</span>
+              <div className="login-stat-divider" />
+              <div className="login-stat-item">
+                <span className="login-stat-num">₹6.3L</span>
+                <span className="login-stat-label">Value</span>
               </div>
-              <div className="login-brand-feature">
-                <div className="login-feature-dot" />
-                <span>Export reports to CSV</span>
-              </div>
+            </div>
+
+            {/* Live clock */}
+            <div className="login-clock">
+              <div className="login-clock-time">{time}</div>
+              <div className="login-clock-date">{date}</div>
             </div>
           </div>
         </div>
@@ -88,7 +117,7 @@ export default function LoginPage() {
             <div className="login-form-header">
               <h2 className="login-form-title">Welcome back</h2>
               <p className="login-form-subtitle">
-                Sign in to your account to continue
+                Sign in to access your inventory dashboard
               </p>
             </div>
 
@@ -167,6 +196,11 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
+      </div>
+
+      {/* Bottom credit */}
+      <div className="login-footer">
+        Built for SME Inventory Management
       </div>
     </div>
   );
