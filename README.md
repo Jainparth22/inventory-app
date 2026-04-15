@@ -51,46 +51,49 @@ InventoryPro is a full-stack, cloud-connected Inventory Management System built 
 | Icons | Lucide React |
 | Hosting | Vercel |
 
-## 📦 Local Development
+## 📦 Local Setup
 
-### Prerequisites
-- Node.js 18+
-- npm
+Depending on how you received this project (ZIP vs GitHub), follow the relevant setup instructions below:
 
-### Setup
+### Option A: Running from the Submission ZIP (For Judges)
+The ZIP automatically includes the pre-filled SQLite database for immediate testing.
+1. Extract the ZIP and open the folder in your terminal.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Start the application:**
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:3000`
 
-1. **Clone and install:**
+### Option B: Running from GitHub Clone
+If you are cloning freshly from GitHub, you will need to generate the local database.
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/Jainparth22/inventory-app.git
    cd inventory-app
+   ```
+2. **Install dependencies:**
+   ```bash
    npm install
    ```
-
-2. **Environment variables:**
-   Create a `.env` file:
-   ```env
-   DATABASE_URL="postgresql://user:pass@host/db?sslmode=require"
-   DIRECT_URL="postgresql://user:pass@host/db?sslmode=require"
-   JWT_SECRET="your-secret-key"
-   ADMIN_USERNAME="admin"
-   ADMIN_PASSWORD="admin123"
-   ```
-
-3. **Database setup:**
+   *(This downloads packages and automatically runs `prisma generate`)*
+3. **Generate the Database & Seed Data:**
    ```bash
-   npx prisma generate
    npx prisma db push
    npx prisma db seed
    ```
-
-4. **Run:**
+   *(This creates the physical `dev.db` file and fills it with dummy data)*
+4. **Start the application:**
    ```bash
    npm run dev
    ```
    Open `http://localhost:3000`
 
 ### 🔄 Resetting the Database
-If you ever want to wipe all data and start fresh with the default demo data, run:
+If you ever mess up the data while testing and want to wipe all data and start fresh with the default demo data, run:
 ```bash
 npx prisma db push --force-reset --accept-data-loss
 npx prisma db seed
