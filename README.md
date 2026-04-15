@@ -99,6 +99,30 @@ npx prisma db push --force-reset --accept-data-loss
 npx prisma db seed
 ```
 
+### ☁️ Switching Between Local & Cloud Database
+The `prisma/schema.prisma` file has **both configurations** — one is active, one is commented out.
+
+**Currently active → Local SQLite (default for local development):**
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+```
+
+**To switch to Cloud PostgreSQL (Neon/Vercel):**
+1. Open `prisma/schema.prisma`
+2. Comment out the SQLite block above
+3. Uncomment the PostgreSQL block below it:
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+```
+4. Add `DATABASE_URL` to your `.env` file (get the URL from your [Neon dashboard](https://neon.tech))
+5. Run `npx prisma db push` to sync the schema to the cloud
+
 ## 🏗 Architecture
 
 - **Server Components + API Routes**: Next.js App Router for SSR pages and REST API endpoints under `/api/`.
